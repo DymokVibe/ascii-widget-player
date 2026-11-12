@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ASCII Media</string>
+    <string name="widget_name">ASCII Media Player</string>
+    <string name="widget_description">AMOLED &amp; Material You system media controller</string>
+    <string name="service_name">ASCII Media Session Reader</string>
+</resources>
