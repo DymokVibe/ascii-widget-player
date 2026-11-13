@@ -60,7 +60,7 @@
                     android:fontFamily="monospace"
                     android:maxLines="1"
                     android:text="[ IDLE // READY ]"
-                    android:textColor="@android:color/system_accent1_200"
+                    android:textColor="@color/widget_accent_border"
                     android:textSize="10sp"
                     android:textStyle="bold" />
 
@@ -71,7 +71,7 @@
                     android:layout_marginStart="6dp"
                     android:fontFamily="monospace"
                     android:text="[ SPK ]"
-                    android:textColor="@android:color/system_neutral2_300"
+                    android:textColor="@color/widget_text_secondary"
                     android:textSize="10sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -84,7 +84,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="No active media"
-                android:textColor="@android:color/system_neutral1_50"
+                android:textColor="@color/widget_text_primary"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -96,7 +96,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="Tap to open player"
-                android:textColor="@android:color/system_neutral2_200"
+                android:textColor="@color/widget_text_secondary"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
@@ -111,8 +111,8 @@
         android:ellipsize="none"
         android:fontFamily="monospace"
         android:maxLines="1"
-        android:text="[──────────────────] 00:00"
-        android:textColor="@android:color/system_neutral2_400"
+        android:text="[────────────────] 00:00"
+        android:textColor="@color/widget_text_muted"
         android:textSize="11sp" />
 
     <!-- Bottom Transport Controls -->

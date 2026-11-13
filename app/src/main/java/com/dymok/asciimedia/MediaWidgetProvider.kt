@@ -7,12 +7,14 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
+import android.media.session.PlaybackState
 import android.provider.Settings
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.widget.RemoteViews
+import androidx.core.content.ContextCompat
 import java.util.Locale
 
 class MediaWidgetProvider : AppWidgetProvider() {
@@ -24,25 +26,30 @@ class MediaWidgetProvider : AppWidgetProvider() {
         const val ACTION_OPEN_APP = "com.dymok.asciimedia.ACTION_OPEN_APP"
         const val ACTION_OUTPUT = "com.dymok.asciimedia.ACTION_OUTPUT"
 
-        fun requestUpdate(context: Context) {
+        fun requestUpdate(context: Context, optimisticPlaying: Boolean? = null) {
             val manager = AppWidgetManager.getInstance(context)
             val component = ComponentName(context, MediaWidgetProvider::class.java)
             val ids = manager.getAppWidgetIds(component)
             if (ids.isNotEmpty()) {
-                updateWidgets(context, manager, ids)
+                updateWidgets(context, manager, ids, optimisticPlaying)
             }
         }
 
-        fun updateWidgets(context: Context, manager: AppWidgetManager, appWidgetIds: IntArray) {
+        fun updateWidgets(
+            context: Context,
+            manager: AppWidgetManager,
+            appWidgetIds: IntArray,
+            optimisticPlaying: Boolean? = null
+        ) {
             val snapshot = MediaRepository.getCurrentSnapshot(context)
-            val accentBright = context.getColor(android.R.color.system_accent1_100)
-            val accentMuted = context.getColor(android.R.color.system_neutral2_400)
-            val darkOnAccent = context.getColor(android.R.color.system_neutral1_900)
+            val effectivePlaying = optimisticPlaying ?: snapshot.isPlaying
+            val accentBright = ContextCompat.getColor(context, R.color.widget_accent_primary)
+            val accentMuted = ContextCompat.getColor(context, R.color.widget_text_muted)
+            val darkOnAccent = ContextCompat.getColor(context, R.color.widget_on_accent)
 
             for (widgetId in appWidgetIds) {
                 val views = RemoteViews(context.packageName, R.layout.widget_media)
 
-                // Background style
                 val bgRes = if (Prefs.isAmoledBg(context)) {
                     R.drawable.bg_widget_amoled
                 } else {
@@ -50,13 +57,11 @@ class MediaWidgetProvider : AppWidgetProvider() {
                 }
                 views.setInt(R.id.widget_root, "setBackgroundResource", bgRes)
 
-                // Metadata text
                 views.setTextViewText(R.id.tv_source_badge, snapshot.sourceLabel)
                 views.setTextViewText(R.id.tv_output_badge, snapshot.outputLabel)
                 views.setTextViewText(R.id.tv_title, snapshot.title)
                 views.setTextViewText(R.id.tv_artist, snapshot.artist)
 
-                // Album art vs placeholder icon
                 if (snapshot.albumArt != null) {
                     views.setViewVisibility(R.id.iv_album_art, View.VISIBLE)
                     views.setViewVisibility(R.id.iv_placeholder_icon, View.GONE)
@@ -67,7 +72,6 @@ class MediaWidgetProvider : AppWidgetProvider() {
                     views.setInt(R.id.iv_placeholder_icon, "setColorFilter", accentBright)
                 }
 
-                // ASCII Progress bar with Material You colors
                 val asciiBar = buildAsciiProgress(
                     positionMs = snapshot.positionMs,
                     durationMs = snapshot.durationMs,
@@ -76,17 +80,15 @@ class MediaWidgetProvider : AppWidgetProvider() {
                 )
                 views.setTextViewText(R.id.tv_ascii_progress, asciiBar)
 
-                // Transport buttons & dynamic tinting
                 views.setImageViewResource(
                     R.id.btn_play_pause,
-                    if (snapshot.isPlaying) R.drawable.ic_pause else R.drawable.ic_play
+                    if (effectivePlaying) R.drawable.ic_pause else R.drawable.ic_play
                 )
                 views.setInt(R.id.btn_play_pause, "setColorFilter", darkOnAccent)
                 views.setInt(R.id.btn_prev, "setColorFilter", accentBright)
                 views.setInt(R.id.btn_next, "setColorFilter", accentBright)
                 views.setInt(R.id.btn_output, "setColorFilter", accentBright)
 
-                // PendingIntents
                 views.setOnClickPendingIntent(
                     R.id.btn_prev,
                     buildActionIntent(context, ACTION_PREV, 101)
@@ -202,16 +204,17 @@ class MediaWidgetProvider : AppWidgetProvider() {
             ACTION_PLAY_PAUSE -> {
                 val controller = MediaRepository.getPrimaryController(context)
                 if (controller != null) {
-                    val isPlaying = controller.playbackState?.state == android.media.session.PlaybackState.STATE_PLAYING
+                    val isPlaying = controller.playbackState?.state == PlaybackState.STATE_PLAYING
                     if (isPlaying) {
                         controller.transportControls.pause()
+                        requestUpdate(context, optimisticPlaying = false)
                     } else {
                         controller.transportControls.play()
+                        requestUpdate(context, optimisticPlaying = true)
                     }
                 } else {
                     openActiveOrLastPlayer(context)
                 }
-                requestUpdate(context)
             }
             ACTION_NEXT -> {
                 MediaRepository.getPrimaryController(context)?.transportControls?.skipToNext()
@@ -266,7 +269,6 @@ class MediaWidgetProvider : AppWidgetProvider() {
     }
 
     private fun openAudioOutputSwitcher(context: Context) {
-        // Try Android system media output dialog first, then volume panel, then Bluetooth settings
         val intents = listOf(
             Intent("com.android.systemui.action.LAUNCH_MEDIA_OUTPUT_DIALOG").apply {
                 setPackage("com.android.systemui")
@@ -285,7 +287,6 @@ class MediaWidgetProvider : AppWidgetProvider() {
             }
         }
 
-        // Last resort: trigger system volume UI
         try {
             val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
             audioManager.adjustStreamVolume(

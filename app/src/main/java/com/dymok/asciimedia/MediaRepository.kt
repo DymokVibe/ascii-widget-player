@@ -20,6 +20,7 @@ import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.os.SystemClock
 import android.provider.Settings
+import androidx.core.content.ContextCompat
 
 data class MediaSnapshot(
     val isActive: Boolean,
@@ -54,7 +55,6 @@ object MediaRepository {
             val controllers = manager.getActiveSessions(component)
             if (controllers.isEmpty()) return null
 
-            // Prefer actively playing session, otherwise most recent active session
             controllers.firstOrNull {
                 it.playbackState?.state == PlaybackState.STATE_PLAYING
             } ?: controllers.firstOrNull()
@@ -180,7 +180,6 @@ object MediaRepository {
         val targetSize = 160
         val cornerRadius = 28f
 
-        // Center-crop square
         val dim = minOf(source.width, source.height).coerceAtLeast(1)
         val xOffset = (source.width - dim) / 2
         val yOffset = (source.height - dim) / 2
@@ -200,13 +199,12 @@ object MediaRepository {
         paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
 
         if (Prefs.isMonetCover(context)) {
-            // Subtle desaturation + Material You accent tint so cover blends with home screen
             val cm = ColorMatrix().apply { setSaturation(0.25f) }
             paint.colorFilter = ColorMatrixColorFilter(cm)
             canvas.drawBitmap(scaled, rect, rect, paint)
 
             val tintPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                val accent = context.getColor(android.R.color.system_accent1_200)
+                val accent = ContextCompat.getColor(context, R.color.widget_accent_border)
                 colorFilter = PorterDuffColorFilter(accent, PorterDuff.Mode.MULTIPLY)
                 alpha = 95
             }

@@ -9,16 +9,34 @@ android {
 
     defaultConfig {
         applicationId = "com.dymok.asciimedia"
-        minSdk = 31
+        minSdk = 29
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
+    }
+
+    signingConfigs {
+        create("persistent") {
+            storeFile = file("release-key.p12")
+            storePassword = "asciimedia123"
+            keyAlias = "asciimedia"
+            keyPassword = "asciimedia123"
+            storeType = "PKCS12"
+            enableV1Signing = true
+            enableV2Signing = true
+            enableV3Signing = true
+        }
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("persistent")
+        }
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("persistent")
+            isMinifyEnabled = false
+            isShrinkResources = false
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

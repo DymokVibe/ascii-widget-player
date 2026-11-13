@@ -69,7 +69,6 @@ class MediaNotificationListener : NotificationListenerService() {
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        // Lightweight fallback if a media notification arrives
         if (activeController == null) {
             rebindActiveSession()
         }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_accent_primary">#D0BCFF</color>
+    <color name="widget_accent_border">#9A82DB</color>
+    <color name="widget_surface_glass">#1C1B1F</color>
+    <color name="widget_surface_button">#2B2930</color>
+    <color name="widget_text_primary">#F4EFF4</color>
+    <color name="widget_text_secondary">#CAC4D0</color>
+    <color name="widget_text_muted">#79747E</color>
+    <color name="widget_on_accent">#1C1B1F</color>
+</resources>

@@ -15,8 +15,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="monospace"
-            android:text="// ASCII MEDIA WIDGET"
-            android:textColor="@android:color/system_accent1_100"
+            android:text="// ASCII MEDIA WIDGET v1.1"
+            android:textColor="@color/widget_accent_primary"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="Material You &amp; AMOLED system media controller."
-            android:textColor="@android:color/system_neutral2_200"
+            android:textColor="@color/widget_text_secondary"
             android:textSize="14sp" />
 
         <!-- Permission Status Card -->
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="monospace"
                 android:text="[ STATUS: CHECKING... ]"
-                android:textColor="@android:color/system_accent1_100"
+                android:textColor="@color/widget_accent_primary"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="Notification Access is required by Android to read active MediaSessions (Spotify, YT Music, Telegram, local players) and display cover art."
-                android:textColor="@android:color/system_neutral2_200"
+                android:textColor="@color/widget_text_secondary"
                 android:textSize="13sp" />
 
             <Button
@@ -77,7 +77,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="monospace"
                 android:text="[ APPEARANCE ]"
-                android:textColor="@android:color/system_accent1_100"
+                android:textColor="@color/widget_accent_primary"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
@@ -88,7 +88,7 @@
                 android:layout_marginTop="8dp"
                 android:checked="true"
                 android:text="Pure AMOLED Black Background (#000000)"
-                android:textColor="@android:color/system_neutral1_50" />
+                android:textColor="@color/widget_text_primary" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switch_monet_cover"
@@ -97,7 +97,7 @@
                 android:layout_marginTop="4dp"
                 android:checked="true"
                 android:text="Monet Duotone Cover Art (matches system palette)"
-                android:textColor="@android:color/system_neutral1_50" />
+                android:textColor="@color/widget_text_primary" />
         </LinearLayout>
 
         <Button
